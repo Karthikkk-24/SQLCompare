@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SQL Structure Difference Checker</title>
+</head>
+
+<body>
+    <h1>SQL Structure Difference Checker</h1>
+    <form onsubmit="compareSQL(event)">
+        <input type="file" id="file1" accept=".sql"><br>
+        <input type="file" id="file2" accept=".sql"><br>
+        <input type="submit" value="Check SQL Differences">
+    </form>
+    <div id="result"></div>
+
+    <script>
+        async function compareSQL(event) {
+            event.preventDefault();
+
+            const file1 = document.getElementById('file1').files[0];
+            const file2 = document.getElementById('file2').files[0];
+
+            if (!file1 || !file2) {
+                alert("Please select two SQL files.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file1', file1);
+            formData.append('file2', file2);
+
+            try {
+                const response = await fetch('/compare', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.text();
+                    document.getElementById('result').textContent = result;
+                } else {
+                    console.error('Error comparing SQL files.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+
+</html>
